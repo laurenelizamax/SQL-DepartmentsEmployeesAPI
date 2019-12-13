@@ -72,27 +72,129 @@ namespace DepartmentsApi.Controllers
                             Id, DeptName
                         FROM Department
                         WHERE Id = @id";
-                    cmd.Parameters.Add(new SqlParameter("@id", id));
+                    cmd.CommandText = "SELECT Id, DeptName FROM Department";
                     SqlDataReader reader = cmd.ExecuteReader();
+                    List<Department> departments = new List<Department>();
 
-                    Department department = null;
-
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        department = new Department
+                        Department department = new Department
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             DepartmentName = reader.GetString(reader.GetOrdinal("DeptName"))
                         };
+
+                        departments.Add(department);
                     }
                     reader.Close();
 
-                    if (department == null)
+                    return Ok(departments);
+                }
+            }
+        }
+
+        // We can make custom routes by using the "Route" annotation. NOTE: DO NOT put a leading forward slash in the URL
+        [HttpGet]
+        [Route("employeeCount")]
+        public async Task<IActionResult> GetEmployeeCount()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT d.Id, d.DeptName, COUNT(e.Id) as EmployeeCount
+                                                FROM Department d
+                                                LEFT JOIN Employee e ON d.Id = e.DepartmentId
+                                                GROUP BY d.Id, d.DeptName";
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    var deptEmpCount = new List<DepartmentEmployeeCount>();
+
+                    while (reader.Read())
                     {
-                        return NotFound($"No department found with the Id of {id}");
+                        deptEmpCount.Add(new DepartmentEmployeeCount
+                        {
+                            DepartmentId = reader.GetInt32(reader.GetOrdinal("Id")),
+                            DepartmentName = reader.GetString(reader.GetOrdinal("DeptName")),
+                            EmployeeCount = reader.GetInt32(reader.GetOrdinal("EmployeeCount"))
+                        });
+                    }
+                    reader.Close();
+
+                    return Ok(deptEmpCount);
+                }
+            }
+        }
+
+
+        [HttpGet]
+        // Need to specify the route because there are more than one HttpGet
+        [Route("something/crazy")]
+        //[Route("GetAllEmployeesInDept")]
+        public async Task<IActionResult> GetAllEmployeesInDept()
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"SELECT d.Id, d.DeptName, e.FirstName, e.LastName, 
+                        e.DepartmentId, e.Id as EmployeeId
+                        FROM Department d
+                        LEFT JOIN Employee e ON d.Id = e.DepartmentId;";
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    List<Department> departments = new List<Department>();
+
+                    while (reader.Read())
+                    {
+                        var departmentId = reader.GetInt32(reader.GetOrdinal("Id"));
+                        var departmentAlreadyAdded = departments.FirstOrDefault(d => d.Id == departmentId);
+
+                        if (departmentAlreadyAdded == null)
+                        {
+                            Department department = new Department
+                            {
+                                Id = departmentId,
+                                DepartmentName = reader.GetString(reader.GetOrdinal("DeptName")),
+                                employees = new List<Employee>()
+                            };
+
+                            departments.Add(department);
+                         
+                             var hasEmployee = !reader.IsDBNull(reader.GetOrdinal("EmployeeId"));
+
+                            if(hasEmployee)
+                            {
+                                department.employees.Add(new Employee()
+                                {
+                                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                    DepartmentId = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Id = reader.GetInt32(reader.GetOrdinal("EmployeeId")),
+
+                                });
+                            }
+                        }
+                        else
+                        {
+                            var hasEmployee = !reader.IsDBNull(reader.GetOrdinal("EmployeeId"));
+
+                            if (hasEmployee)
+                            {
+                                departmentAlreadyAdded.employees.Add(new Employee()
+                                {
+                                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                    DepartmentId = reader.GetInt32(reader.GetOrdinal("Id")),
+                                    Id = reader.GetInt32(reader.GetOrdinal("EmployeeId"))
+                                });
+                            }
+                        }
                     }
 
-                    return Ok(department);
+                    reader.Close();
+
+                    return Ok(departments);
                 }
             }
         }

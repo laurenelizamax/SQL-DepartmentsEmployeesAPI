@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace DepartmentsApi.Models
 {
-    public class Department
+    public class DepartmentEmployeeCount
     {
-        public int Id { get; set; }
+        public int DepartmentId { get; set; }
         public string DepartmentName { get; set; }
-
-        public List<Employee> employees { get; set; } = new List<Employee>();
+        public int EmployeeCount { get; set; }
     }
 }
