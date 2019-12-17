@@ -30,6 +30,11 @@ namespace DepartmentsApi.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Gets a list of all Departments from database
+        /// </summary>
+        /// <returns> A list of Departments </returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -39,7 +44,7 @@ namespace DepartmentsApi.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "SELECT Id, DeptName FROM Department";
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
                     List<Department> departments = new List<Department>();
 
                     while (reader.Read())
@@ -59,8 +64,13 @@ namespace DepartmentsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}", Name = "GetDepartment")]
-        public async Task<IActionResult> Get([FromRoute] int id)
+        public async Task<IActionResult> GetbyId([FromRoute] int id)
         {
             using (SqlConnection conn = Connection)
             {
@@ -72,26 +82,31 @@ namespace DepartmentsApi.Controllers
                             Id, DeptName
                         FROM Department
                         WHERE Id = @id";
-                    cmd.CommandText = "SELECT Id, DeptName FROM Department";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
-                    List<Department> departments = new List<Department>();
 
-                    while (reader.Read())
+                    Department department = null;
+
+                    if (reader.Read())
                     {
-                        Department department = new Department
+                        department = new Department
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             DepartmentName = reader.GetString(reader.GetOrdinal("DeptName"))
                         };
-
-                        departments.Add(department);
                     }
                     reader.Close();
 
-                    return Ok(departments);
+                    if (department == null)
+                    {
+                        return NotFound($"No department found with the Id of {id}");
+                    }
+
+                    return Ok(department);
                 }
             }
         }
+
 
         // We can make custom routes by using the "Route" annotation. NOTE: DO NOT put a leading forward slash in the URL
         [HttpGet]
@@ -107,7 +122,7 @@ namespace DepartmentsApi.Controllers
                                                 FROM Department d
                                                 LEFT JOIN Employee e ON d.Id = e.DepartmentId
                                                 GROUP BY d.Id, d.DeptName";
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
                     var deptEmpCount = new List<DepartmentEmployeeCount>();
 
                     while (reader.Read())
@@ -142,7 +157,7 @@ namespace DepartmentsApi.Controllers
                         e.DepartmentId, e.Id as EmployeeId
                         FROM Department d
                         LEFT JOIN Employee e ON d.Id = e.DepartmentId;";
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
                     List<Department> departments = new List<Department>();
 
                     while (reader.Read())
@@ -212,7 +227,7 @@ namespace DepartmentsApi.Controllers
                                         VALUES (@DeptName)";
                     cmd.Parameters.Add(new SqlParameter("@DeptName", department.DepartmentName));
 
-                    int newId = (int)cmd.ExecuteScalar();
+                    int newId = (int) await cmd.ExecuteScalarAsync();
                     department.Id = newId;
                     return CreatedAtRoute("GetDepartment", new { id = newId }, department);
                 }
@@ -234,7 +249,7 @@ namespace DepartmentsApi.Controllers
                         cmd.Parameters.Add(new SqlParameter("@DeptName", department.DepartmentName));
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
                         {
                             return new StatusCodeResult(StatusCodes.Status204NoContent);
@@ -245,7 +260,8 @@ namespace DepartmentsApi.Controllers
             }
             catch (Exception)
             {
-                if (!DepartmentExists(id))
+                bool exists = await DepartmentExists(id);
+                if (!exists)
                 {
                     return NotFound();
                 }
@@ -268,7 +284,7 @@ namespace DepartmentsApi.Controllers
                         cmd.CommandText = @"DELETE FROM Department WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
                         {
                             return new StatusCodeResult(StatusCodes.Status204NoContent);
@@ -279,7 +295,8 @@ namespace DepartmentsApi.Controllers
             }
             catch (Exception)
             {
-                if (!DepartmentExists(id))
+                bool exists = await DepartmentExists(id);
+                if (!exists)
                 {
                     return NotFound();
                 }
@@ -289,7 +306,7 @@ namespace DepartmentsApi.Controllers
                 }
             }
         }
-        private bool DepartmentExists(int id)
+        private async Task<bool> DepartmentExists(int id)
         {
             using (SqlConnection conn = Connection)
             {
@@ -302,7 +319,7 @@ namespace DepartmentsApi.Controllers
                         WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataReader reader = await cmd.ExecuteReaderAsync();
                     return reader.Read();
                 }
             }

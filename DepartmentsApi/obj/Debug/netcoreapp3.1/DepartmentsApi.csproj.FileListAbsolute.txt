@@ -33,7 +33,14 @@ C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcor
 C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp2.0\System.Runtime.Caching.dll
 C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.csprojAssemblyReference.cache
-C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.csproj.CopyComplete
 C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.dll
 C:\Users\Lauren\Desktop\Workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.pdb
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\Microsoft.OpenApi.dll
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\bin\Debug\netcoreapp3.1\DepartmentsApi.xml
+C:\Users\Lauren\desktop\workspace\DepartmentsApi\DepartmentsApi\obj\Debug\netcoreapp3.1\DepartmentsApi.xml

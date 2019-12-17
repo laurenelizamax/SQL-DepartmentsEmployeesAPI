@@ -29,7 +29,10 @@ namespace DepartmentsApi.Controllers
                 return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
             }
         }
-
+        /// <summary>
+        /// Get all Employees
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -61,6 +64,11 @@ namespace DepartmentsApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}", Name = "GetEmployee")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
@@ -93,13 +101,19 @@ namespace DepartmentsApi.Controllers
 
                     if (employee == null)
                     {
-                        return NotFound($"No department found with the Id of {id}");
+                        return NotFound($"No employee found with the Id of {id}");
                     }
 
                     return Ok(employee);
                 }
             }
         }
+
+        /// <summary>
+        /// Post new Employee
+        /// </summary>
+        /// <param name="employee"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Employee employee)
         {
@@ -123,6 +137,12 @@ namespace DepartmentsApi.Controllers
             }
         }
 
+        /// <summary>
+        ///  Update Employee
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="employee"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Employee employee)
         {
@@ -164,6 +184,12 @@ namespace DepartmentsApi.Controllers
                 }
             }
         }
+
+        /// <summary>
+        ///  Delete employee
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
